@@ -1,8 +1,10 @@
-import React from "react";
-import logo from "./logo.svg";
 import "./App.css";
 
-const App: React.FC = () => {
+import React, {useEffect, useState} from "react";
+import {useDispatch, useSelector} from "react-redux";
+import logo from "./logo.svg";
+
+export const App: React.FC = () => {
   return (
     <div className="App">
       <header className="App-header">
@@ -22,5 +24,40 @@ const App: React.FC = () => {
     </div>
   );
 };
+export const Thing: React.FC = () => {
+  const count = useSelector((state: any) => state.totalThumnailsHidden);
+  const dispatch = useDispatch();
+  return (
+    <div>
+      <button
+        onClick={() => {
+          dispatch({type: "SHOW_THUMBNAIL"});
+        }}
+      >
+        open
+      </button>
+      <br />
+      {count}
+    </div>
+  );
+};
+export const Thing2: React.FC = () => {
+  const count = useSelector((state: any) => state.totalThumnailsHidden);
+  const dispatch = useDispatch();
 
-export default App;
+  useEffect(() => {
+    dispatch({type: "HIDE_THUMBNAIL"});
+    return;
+  }, [dispatch]);
+  return (
+    <div>
+      <button
+        onClick={() => {
+          dispatch({type: "HIDE_THUMBNAIL"});
+        }}
+      >
+        increase
+      </button>
+    </div>
+  );
+};

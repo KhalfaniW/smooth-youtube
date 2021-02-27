@@ -1,12 +1,98 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import "./index.css";
 
-ReactDOM.render(<App />, document.getElementById('root'));
+import {Provider} from "react-redux";
+import {createStore} from "redux";
+import {range} from "lodash";
+import React from "react";
+import produce from "immer";
 
+import {Thing, Thing2} from "./App";
+import {
+  getElementShown,
+  injectElement,
+  showOriginalElement,
+  showReactElement,
+  ElementShown,
+} from "./replace-element";
+import * as serviceWorker from "./serviceWorker";
+let store: any = {};
+const dispatch = 5,
+  appState = 2;
+
+let pairs: any = [];
+function handleStoreChange() {
+  const currentStore = store.getState();
+  if (pairs.length < 1) return;
+
+  showOriginalElement({elementPair: pairs[0]});
+  getElementShown({elementPair: pairs[1]});
+  range(1, 2).map((thumbnailIndex) => {
+    console.log(currentStore.totalThumnailsHidden);
+    if (currentStore.totalThumnailsHidden + 1 >= thumbnailIndex) {
+      if (
+        getElementShown({elementPair: pairs[thumbnailIndex]}) ===
+        ElementShown.Original
+      )
+        showReactElement({elementPair: pairs[thumbnailIndex]});
+    } else {
+      showOriginalElement({elementPair: pairs[1]});
+    }
+  });
+}
+
+const unsubscribe = store.subscribe(handleStoreChange);
+
+pairs = [
+  injectElement({
+    currentDocument: document,
+    jsx: (
+      <>
+        <Provider store={store}>
+          <br />
+          <Thing dispatch={dispatch} appState={appState} />
+        </Provider>
+      </>
+    ),
+    index: 0,
+  }),
+  injectElement({
+    currentDocument: document,
+    jsx: (
+      <>
+        <Provider store={store}>
+          <Thing2 dispatch={dispatch} appState={appState} />
+        </Provider>
+      </>
+    ),
+    index: 1,
+  }),
+  injectElement({
+    currentDocument: document,
+    jsx: (
+      <>
+        <br />
+        <Provider store={store}>
+          <Thing2 dispatch={dispatch} appState={appState} />
+        </Provider>
+      </>
+    ),
+    index: 2,
+  }),
+];
+/* window["debug"] = {
+ *   pairs,
+ *   showReactElement,
+ *   run: () =>
+ *     pairs.forEach((pair) => {
+ *       showReactElement({elementPair: pair});
+ *     }),
+ * }; */
+pairs.forEach((pair) => {
+  /* showReactElement({elementPair: pair}); */
+});
+setTimeout(() => {
+  console.log(pairs);
+}, 2000);
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
