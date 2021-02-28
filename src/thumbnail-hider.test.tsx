@@ -20,7 +20,7 @@ const userActions = {
     return queryByText(container, "Thumbnail Is Shown") !== null;
   },
 };
-const youtubeThumbnailSelector = "ytd-thumbnail";
+
 test("replacement item can be clicked", () => {
   const mockFunction = jest.fn(() => {});
   insertYoutubeHtml();
@@ -37,61 +37,26 @@ test("replacement item can be clicked", () => {
   expect(mockFunction).toHaveBeenCalledTimes(1);
 });
 
-describe.only("tmp-describe block ", () => {
-  test("effect", () => {
-    document.body.innerHTML = insertYoutubeHtml();
-    const initalTestStore = configureStore();
+test.skip("replace 1 then show thumbnail", () => {
+  insertYoutubeHtml();
 
-    initalTestStore.dispatch({
-      type: "INITIALIZE",
-      document: document,
-      renderAtIndex: (index: number) => {
-        <Provider store={initalTestStore}>
-          <ThumbnailHider index={index} />
-        </Provider>;
-      },
-    });
-
-    const totalThumbnailsInMockDocument = document.querySelectorAll(
-      youtubeThumbnailSelector,
-    ).length;
-
-    expect(getEffectStore().elementPairs.length).toBe(
-      totalThumbnailsInMockDocument,
-    );
-    expect(getTotalThumbnailsHidden(getEffectStore())).toBe(
-      totalThumbnailsInMockDocument,
-    );
-    /* initalTestStore.dispatch({type: "HIDE_THUMBNAIL", index: 0});
-     * initalTestStore.dispatch({type: "HIDE_THUMBNAIL", index: 0}); */
-    /* expect( ).toBe( ); */
+  const elementPair = injectElement({
+    currentDocument: document,
+    jsx: (
+      <Provider store={initalTestStore}>
+        <ThumbnailHider index={0} />
+      </Provider>
+    ),
+    index: 0,
   });
 
-  test.skip("replace 1 then show thumbnail", () => {
-    insertYoutubeHtml();
+  expect(userActions.getIsThumbnailShown(elementPair.reactComponentContainer));
 
-    const elementPair = injectElement({
-      currentDocument: document,
-      jsx: (
-        <Provider store={initalTestStore}>
-          <ThumbnailHider index={0} />
-        </Provider>
-      ),
-      index: 0,
-    });
+  userActions.hideThumbnail(elementPair.reactComponentContainer);
+  /* userActions.hideThumbnail(elementPair.reactComponentContainer); */
 
-    expect(
-      userActions.getIsThumbnailShown(elementPair.reactComponentContainer),
-    );
-
-    userActions.hideThumbnail(elementPair.reactComponentContainer);
-    /* userActions.hideThumbnail(elementPair.reactComponentContainer); */
-
-    //TODO falsify
-    expect(
-      userActions.getIsThumbnailShown(elementPair.reactComponentContainer),
-    );
-  });
+  //TODO falsify
+  expect(userActions.getIsThumbnailShown(elementPair.reactComponentContainer));
 });
 test("replace 10 then show 5 thumbnails", () => {
   // expect().toBe();

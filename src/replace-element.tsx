@@ -63,6 +63,15 @@ export function buildReactComponentContainer({
   ReactDOM.render(jsx, reactContainer);
   return reactContainer;
 }
+export function getIsOriginalElementHidden({
+  elementPair,
+}: {
+  elementPair: HTMLElementReplacementPair;
+}): Boolean {
+  const isOriginalShown =
+    elementPair.originalElementToReplace.style.visibility === "hidden";
+  return isOriginalShown;
+}
 
 export function getElementShown({
   elementPair,
@@ -136,7 +145,13 @@ export function showReactElement({
   elementPair: HTMLElementReplacementPair;
 }) {
   elementPair.originalElementToReplace.style.visibility = "hidden";
-  elementPair.reactComponentContainer.style.visibility = "";
+}
+export function hideOriginalElement({
+  elementPair,
+}: {
+  elementPair: HTMLElementReplacementPair;
+}) {
+  elementPair.originalElementToReplace.style.visibility = "hidden";
 }
 
 export function showOriginalElement({
@@ -145,5 +160,4 @@ export function showOriginalElement({
   elementPair: HTMLElementReplacementPair;
 }) {
   elementPair.originalElementToReplace.style.visibility = "";
-  elementPair.reactComponentContainer.style.visibility = "hidden";
 }

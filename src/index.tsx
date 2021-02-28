@@ -6,13 +6,12 @@ import React from "react";
 
 import {Thing, Thing2} from "./App";
 import {
-  getElementShown,
   injectElement,
   showOriginalElement,
   showReactElement,
   ElementShown,
 } from "./replace-element";
-import store from './redux/modules/store';
+import store from "./redux/modules/store";
 
 const dispatch = 5,
   appState = 2;
@@ -23,19 +22,6 @@ function handleStoreChange() {
   if (pairs.length < 1) return;
 
   showOriginalElement({elementPair: pairs[0]});
-  getElementShown({elementPair: pairs[1]});
-  range(1, 2).map((thumbnailIndex) => {
-    console.log(currentStore.totalThumnailsHidden);
-    if (currentStore.totalThumnailsHidden + 1 >= thumbnailIndex) {
-      if (
-        getElementShown({elementPair: pairs[thumbnailIndex]}) ===
-        ElementShown.Original
-      )
-        showReactElement({elementPair: pairs[thumbnailIndex]});
-    } else {
-      showOriginalElement({elementPair: pairs[1]});
-    }
-  });
 }
 
 const unsubscribe = store.subscribe(handleStoreChange);

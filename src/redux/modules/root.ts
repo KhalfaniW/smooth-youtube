@@ -12,8 +12,8 @@ import {reduceAppState} from "./appReducer";
 export const rootEpic = combineEpics(
   pingEpic,
   initializeAppInjectEpic,
-  hideThumbnailEpic,
   showThumbnailEpic,
+  hideThumbnailEpic,
 );
 
 export const rootReducer = combineReducers({

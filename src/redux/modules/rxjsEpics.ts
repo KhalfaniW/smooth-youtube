@@ -1,30 +1,31 @@
 import {ofType} from "redux-observable";
 
-import {tap, mapTo} from "rxjs/operators";
-import * as _ from "lodash";
+import {tap, mapTo, map} from "rxjs/operators";
+
+import {EffectStore, effectStore} from "./effectStore";
 import {
   ElementShown,
   getElementShown,
+  getIsOriginalElementHidden,
+  hideOriginalElement,
   injectElement,
   showOriginalElement,
-  showReactElement,
 } from "../../replace-element";
 
 let DomElements = [];
 //Dom nodes cant goin app state or store
 //store effect data here
-export interface EffectStore {
-  elementPairs: Array<any>;
-  document?: Document;
-}
-let effectStore: EffectStore = {
-  elementPairs: [],
-  document: null,
-};
-
 export function getEffectStore() {
   return effectStore;
 }
+const safelyEndEpic = () => {
+  return map((action: any) => {
+    return {
+      type: action.type + "_HANLDED",
+    };
+  });
+};
+
 // function createElementAndReactState() {
 //   return {
 //     elementState: "Hidden",
@@ -32,8 +33,8 @@ export function getEffectStore() {
 //   };
 // }
 export function getTotalThumbnailsHidden(effectStore: EffectStore) {
-  const allShownElements = effectStore.elementPairs.filter(
-    (elementPair) => getElementShown({elementPair}) === ElementShown.React,
+  const allShownElements = effectStore.elementPairs.filter((elementPair) =>
+    getIsOriginalElementHidden({elementPair}),
   );
   return allShownElements.length;
 }
@@ -57,50 +58,45 @@ export const initializeAppInjectEpic = (action$: any) =>
       // action$.document.
       effectStore.document = action.document;
 
-      effectStore.document
-        .querySelectorAll("ytd-thumbnail")
+      effectStore
+        .document!.querySelectorAll("ytd-thumbnail")
         .forEach((element, thumbnailIndex) => {
           const elementPair = injectElement({
             currentDocument: document,
             jsx: action.renderAtIndex(thumbnailIndex),
             index: thumbnailIndex,
           });
-          showReactElement({elementPair});
+          hideOriginalElement({elementPair});
           effectStore.elementPairs.push(elementPair);
         });
+    }),
+    safelyEndEpic(),
+  );
 
-      // console.log({
-      //   l: effectStore.document.body.innerHTML.length,
-      //   found: .length,
-      // });
-      // effectStore.elementPairs = Array.from(
-      //   effectStore.document.querySelectorAll("ytd-thumbnail"),
-      // );
-    }),
-    mapTo((action: any) => {
-      return {
-        type: action.type + "_HANDLED",
-      };
-    }),
-  );
-export const hideThumbnailEpic = (action$: any) =>
-  action$.pipe(
-    ofType("PING"),
-    // delay(1000), // Asynchronously wait 1000ms then continue
-    mapTo({type: "HIDE_THUMBNAIL"}),
-    tap(() => {
-      console.log("test log");
-    }),
-  );
 export const showThumbnailEpic = (action$: any) =>
   action$.pipe(
-    ofType("PING"),
-    // delay(1000), // Asynchronously wait 1000ms then continue
-    mapTo({type: "HIDE_THUMBNAIL"}),
-    tap(() => {
-      console.log("test log");
+    ofType("SHOW_THUMBNAIL"),
+    tap((action: any) => {
+      showOriginalElement({
+        elementPair: effectStore.elementPairs[action.index],
+      });
     }),
+    mapTo({type: "4HIDE_THUMBNAIL"}),
+
+    safelyEndEpic(),
   );
+
+export const hideThumbnailEpic = (action$: any) =>
+  action$.pipe(
+    ofType("SHOW_THUMBNAIL"),
+    tap((action: any) => {
+      showOriginalElement({
+        elementPair: effectStore.elementPairs[action.index],
+      });
+    }),
+    safelyEndEpic(),
+  );
+
 export const pingEpic = (action$: any) =>
   action$.pipe(
     ofType("PING"),
