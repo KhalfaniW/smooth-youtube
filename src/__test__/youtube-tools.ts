@@ -6,4 +6,5 @@ export const insertYoutubeHtml = () => {
     path.resolve(__dirname, "./__mocks__/youtube/youtube-snapshot.html"),
   );
   document.body.innerHTML = youtubeHtml.toString();
+  return youtubeHtml.toString();
 };

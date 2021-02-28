@@ -3,12 +3,23 @@
 
 import {
   injectElement,
-  createThumbnailJSX,
   showReactElement,
   showOriginalElement,
 } from "../../src/replace-element";
 
 const thumbnailReplacementText = "Smoke Weed Everyday";
+export const createThumbnailJSX = (thumbnailReplacementText: string) => (
+  <React.StrictMode>
+    <button
+      style={{position: "absolute", top: 0, left: 0}}
+      onClick={() => {
+        alert("pleasentness");
+      }}
+    >
+      {thumbnailReplacementText}
+    </button>
+  </React.StrictMode>
+);
 
 describe("App", function() {
   function disableBrowserExceptions() {

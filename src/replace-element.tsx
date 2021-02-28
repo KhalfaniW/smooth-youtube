@@ -6,19 +6,10 @@ export interface HTMLElementReplacementPair {
   originalElementToReplace: HTMLElement;
   reactComponentContainer: HTMLElement;
 }
-
-export const createThumbnailJSX = (thumbnailReplacementText: string) => (
-  <React.StrictMode>
-    <button
-      style={{position: "absolute", top: 0, left: 0}}
-      onClick={() => {
-        alert("pleasentness");
-      }}
-    >
-      {thumbnailReplacementText}
-    </button>
-  </React.StrictMode>
-);
+export enum ElementShown {
+  React = "React",
+  Original = "Original",
+}
 
 /* export function injectElement({currentDocument: Document}) { */
 export function injectElement({
@@ -71,11 +62,6 @@ export function buildReactComponentContainer({
   originalElementContainer.appendChild(reactContainer);
   ReactDOM.render(jsx, reactContainer);
   return reactContainer;
-}
-
-export enum ElementShown {
-  React = "React",
-  Original = "Original",
 }
 
 export function getElementShown({

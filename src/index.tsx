@@ -1,10 +1,8 @@
 import "./index.css";
 
 import {Provider} from "react-redux";
-import {createStore} from "redux";
 import {range} from "lodash";
 import React from "react";
-import produce from "immer";
 
 import {Thing, Thing2} from "./App";
 import {
@@ -14,8 +12,8 @@ import {
   showReactElement,
   ElementShown,
 } from "./replace-element";
-import * as serviceWorker from "./serviceWorker";
-let store: any = {};
+import store from './redux/modules/store';
+
 const dispatch = 5,
   appState = 2;
 

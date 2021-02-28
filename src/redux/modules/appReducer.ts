@@ -4,6 +4,7 @@ import produce from "immer";
 export function reduceAppState(
   state: any = {
     totalThumnailsHidden: 0,
+    thumbnailStates: [],
   },
   action: any,
 ): any {
@@ -12,6 +13,10 @@ export function reduceAppState(
       case "PONG":
         return draftState;
       case "PING":
+        return draftState;
+
+      case "ADD_THUMBNAIL":
+        draftState.push(action.thumbnailIndex);
         return draftState;
       case "HIDE_THUMBNAIL":
         draftState.totalThumnailsHidden++;
@@ -27,4 +32,13 @@ export function reduceAppState(
         return state;
     }
   });
+}
+enum ThumbnailStates {
+  Hidden = "hidden",
+  Shown = "shown",
+}
+function createHiddenThumbnailAtIndex(index) {
+  return {
+    thumbnailState: ThumbnailState.HIDDEN,
+  };
 }
