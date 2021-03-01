@@ -1,47 +1,24 @@
 import {Provider} from "react-redux";
-import {fireEvent, getAllByText, queryByText} from "@testing-library/react";
 import React from "react";
 
-import {ActionNames, ThumbnailHider} from "../../thumbnail-hider";
+import { ThumbnailHider } from '../../thumbnail-hider';
 import {
   getEffectStore,
   getTotalThumbnailsHidden,
 } from "../../redux/modules/rxjsEpics";
-
 import {initializeEffectStore} from "../../redux/modules/effectStore";
+import {initializeStoreIntoDOM} from "../..";
 import {insertYoutubeHtml} from "../youtube-tools";
-import {showOriginalElement} from "../../replace-element";
-import configureStore from "../../redux/configure-store";
+import { userActions } from '../../thumbnail-hider.test';
+import store from "../../redux/modules/store";
 
 const youtubeThumbnailSelector = "ytd-thumbnail";
 
-const userActions = {
-  hideThumbnailAtIndex: (container: HTMLElement, index: number) => {
-    const showThumbnailButton = getAllByText(
-      container,
-      ActionNames.showThumbnail,
-    )[index];
-    fireEvent.click(showThumbnailButton);
-  },
-  getIsThumbnailShown: (container: HTMLElement) => {
-    return queryByText(container, "Thumbnail Is Shown") !== null;
-  },
-};
-
-const initalTestStore = configureStore();
 test("initialize by replacing all thumbnails", () => {
   insertYoutubeHtml();
 
   initializeEffectStore();
-  initalTestStore.dispatch({
-    type: "INITIALIZE",
-    document: document,
-    renderAtIndex: (index: number) => {
-      <Provider store={initalTestStore}>
-        <ThumbnailHider index={index} />
-      </Provider>;
-    },
-  });
+  initializeStoreIntoDOM();
 
   const totalThumbnailsInMockDocument = document.querySelectorAll(
     youtubeThumbnailSelector,
@@ -58,23 +35,14 @@ test("initialize by replacing all thumbnails", () => {
 test("hide and show some thumbnails", () => {
   insertYoutubeHtml();
   initializeEffectStore();
-
-  initalTestStore.dispatch({
-    type: "INITIALIZE",
-    document: document,
-    renderAtIndex: (index: number) => {
-      <Provider store={initalTestStore}>
-        <ThumbnailHider index={index} />
-      </Provider>;
-    },
-  });
+  initializeStoreIntoDOM();
 
   const totalThumbnailsInMockDocument = document.querySelectorAll(
     youtubeThumbnailSelector,
   ).length;
 
   [1, 2, 3].forEach((index) => {
-    initalTestStore.dispatch({
+    store.dispatch({
       type: "SHOW_THUMBNAIL",
       index,
     });
@@ -84,13 +52,83 @@ test("hide and show some thumbnails", () => {
     totalThumbnailsInMockDocument - 3,
   );
   [2, 3, 40].forEach((index) => {
-    initalTestStore.dispatch({
+    store.dispatch({
       type: "HIDE_THUMBNAIL",
       index,
     });
   });
 
   expect(getTotalThumbnailsHidden(getEffectStore())).toBe(
-    totalThumbnailsInMockDocument - 3,
+    totalThumbnailsInMockDocument - 1,
   );
+});
+test("element is in DOM", () => {
+  const testString = "* testString *";
+
+  insertYoutubeHtml();
+  initializeEffectStore();
+  initializeStoreIntoDOM({
+    renderAtThumbnailIndex: (index: number) => {
+      return (
+        <Provider store={store}>
+          <ThumbnailHider index={0} />
+          {testString}
+        </Provider>
+      );
+    },
+  });
+
+  const containerElement = getEffectStore().elementPairs[0]
+    .reactComponentContainer;
+  expect(containerElement.innerHTML).toContain(testString);
+});
+
+test("hide and show some thumbnails as user", () => {
+  insertYoutubeHtml();
+  initializeEffectStore();
+  initializeStoreIntoDOM();
+
+  const totalThumbnailsInMockDocument = document.querySelectorAll(
+    youtubeThumbnailSelector,
+  ).length;
+
+  [1].forEach((index) => {
+    userActions.showThumbnailAtIndex(
+      getEffectStore().elementPairs[index].reactComponentContainer,
+      0,
+    );
+  });
+
+  expect(getTotalThumbnailsHidden(getEffectStore())).toBe(
+    totalThumbnailsInMockDocument - 1,
+  );
+
+  [1].forEach((index) => {
+    userActions.hideThumbnailAtIndex(
+      getEffectStore().elementPairs[index].reactComponentContainer,
+      0,
+    );
+
+    /* userActions.hideThumbnailAtIndex(document.body, index); */
+  });
+
+  expect(getTotalThumbnailsHidden(getEffectStore())).toBe(
+    totalThumbnailsInMockDocument,
+  );
+
+  /* [1, 2, 3].forEach((index) => {
+     *   userActions.toggleThumbnailAtIndex(document.body, index);
+     * });
+
+     * expect(getTotalThumbnailsHidden(getEffectStore())).toBe(
+     *   totalThumbnailsInMockDocument - 3,
+     * );
+
+     * [2, 3].forEach((index) => {
+     *   userActions.toggleThumbnailAtIndex(document.body, index);
+     * });
+
+     * expect(getTotalThumbnailsHidden(getEffectStore())).toBe(
+     *   totalThumbnailsInMockDocument - 1,
+     * ); */
 });

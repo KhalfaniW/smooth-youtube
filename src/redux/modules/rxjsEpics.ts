@@ -62,7 +62,7 @@ export const initializeAppInjectEpic = (action$: any) =>
         .document!.querySelectorAll("ytd-thumbnail")
         .forEach((element, thumbnailIndex) => {
           const elementPair = injectElement({
-            currentDocument: document,
+            currentDocument: effectStore.document,
             jsx: action.renderAtIndex(thumbnailIndex),
             index: thumbnailIndex,
           });
@@ -70,7 +70,12 @@ export const initializeAppInjectEpic = (action$: any) =>
           effectStore.elementPairs.push(elementPair);
         });
     }),
-    safelyEndEpic(),
+    map((action: any) => {
+      return {
+        type: action.type + "_HANLDED",
+        thumbnailCount: effectStore.elementPairs,
+      };
+    }),
   );
 
 export const showThumbnailEpic = (action$: any) =>
@@ -88,9 +93,9 @@ export const showThumbnailEpic = (action$: any) =>
 
 export const hideThumbnailEpic = (action$: any) =>
   action$.pipe(
-    ofType("SHOW_THUMBNAIL"),
+    ofType("HIDE_THUMBNAIL"),
     tap((action: any) => {
-      showOriginalElement({
+      hideOriginalElement({
         elementPair: effectStore.elementPairs[action.index],
       });
     }),
@@ -103,9 +108,7 @@ export const pingEpic = (action$: any) =>
 
     // delay(1000), // Asynchronously wait 1000ms then continue
     tap(() => {
-      console.log("test log2");
-      effectStore.elementPairs.push(5);
-      console.log(effectStore);
+      console.log("???PING epic called???");
     }),
 
     mapTo({type: action$.type + "_HANDLED"}),

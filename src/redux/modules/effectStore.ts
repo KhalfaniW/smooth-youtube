@@ -1,5 +1,7 @@
+import { HTMLElementReplacementPair } from '../../replace-element';
+
 export interface EffectStore {
-  elementPairs: Array<any>;
+  elementPairs: Array<HTMLElementReplacementPair>;
   document?: Document;
 }
 //TODO make redux like

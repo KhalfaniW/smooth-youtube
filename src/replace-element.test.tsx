@@ -50,7 +50,7 @@ test("replacement item can be clicked", () => {
   const clickHideThumbnail = () => {
     const showThumbnailButton = getByText(
       reactOriginalPair.reactComponentContainer,
-      ActionNames.showThumbnail,
+      ActionNames.toggleThumbnail,
     );
     fireEvent.click(showThumbnailButton);
   };
@@ -58,7 +58,7 @@ test("replacement item can be clicked", () => {
   insertYoutubeHtml();
   reactOriginalPair = injectElement({
     currentDocument: document,
-    jsx: <button onClick={mockFunction}>{ActionNames.showThumbnail}</button>,
+    jsx: <button onClick={mockFunction}>{ActionNames.toggleThumbnail}</button>,
     index: 0,
   });
   showReactElement({elementPair: reactOriginalPair});

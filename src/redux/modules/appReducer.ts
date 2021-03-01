@@ -1,8 +1,15 @@
+import * as _ from "lodash";
 import produce from "immer";
 
-//TODO
+enum ThumbnailStates {
+  HIDDEN = "hidden",
+  SHOWN = "shown",
+}
 export function reduceAppState(
-  state: any = {
+  state: {
+    totalThumnailsHidden: number;
+    thumbnailStates: Array<ThumbnailStates>;
+  } = {
     totalThumnailsHidden: 0,
     thumbnailStates: [],
   },
@@ -10,22 +17,36 @@ export function reduceAppState(
 ): any {
   return produce(state, (draftState: any) => {
     switch (action.type) {
+      case "RESET":
+        const resetStateValue = undefined;
+        return resetStateValue;
+
       case "PONG":
         return draftState;
       case "PING":
         return draftState;
 
+      case "INITIALIZE_HANDLED":
+        draftState.thumbnailStates = _.range(
+          draftState.thumbnailStates.length,
+          action.thumbnailCount,
+        ).map((thumbnailIndex: number) => ThumbnailStates.HIDDEN);
+        return draftState;
       case "ADD_THUMBNAIL":
         draftState.push(action.thumbnailIndex);
         return draftState;
       case "HIDE_THUMBNAIL":
         draftState.totalThumnailsHidden++;
+        draftState.thumbnailStates[action.index] = ThumbnailStates.HIDDEN;
         return draftState;
+
       case "SHOW_THUMBNAIL":
         draftState.totalThumnailsHidden = Math.max(
           draftState.totalThumnailsHidden - 1,
           0,
         );
+        draftState.thumbnailStates[action.index] = ThumbnailStates.SHOWN;
+
         return draftState;
 
       default:
@@ -33,12 +54,8 @@ export function reduceAppState(
     }
   });
 }
-enum ThumbnailStates {
-  Hidden = "hidden",
-  Shown = "shown",
-}
 function createHiddenThumbnailAtIndex(index) {
   return {
-    thumbnailState: ThumbnailState.HIDDEN,
+    thumbnailState: ThumbnailStates.HIDDEN,
   };
 }

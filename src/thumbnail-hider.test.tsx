@@ -1,5 +1,10 @@
 import {Provider} from "react-redux";
-import {fireEvent, getByText, queryByText} from "@testing-library/react";
+import {
+  fireEvent,
+  getByText,
+  getAllByText,
+  queryByText,
+} from "@testing-library/react";
 import React from "react";
 
 import {ActionNames, ThumbnailHider} from "./thumbnail-hider";
@@ -11,13 +16,32 @@ import {injectElement, showReactElement} from "./replace-element";
 import {insertYoutubeHtml} from "./__test__/youtube-tools";
 import configureStore from "./redux/configure-store";
 
-const userActions = {
+export const userActions = {
   hideThumbnail: (container: HTMLElement) => {
-    const showThumbnailButton = getByText(container, ActionNames.showThumbnail);
+    const showThumbnailButton = getByText(
+      container,
+      ActionNames.toggleThumbnail,
+    );
     fireEvent.click(showThumbnailButton);
   },
   getIsThumbnailShown: (container: HTMLElement) => {
     return queryByText(container, "Thumbnail Is Shown") !== null;
+  },
+  showThumbnailAtIndex: (container: HTMLElement, index: number) => {
+    const showThumbnailButton = getAllByText(
+      container,
+      ActionNames.showThumbnailButtonText,
+    )[index];
+
+    fireEvent.click(showThumbnailButton);
+  },
+  hideThumbnailAtIndex: (container: HTMLElement, index: number) => {
+    const hideThumbnailButton = getAllByText(
+      container,
+      ActionNames.hideThumbnailButtonText,
+    )[index];
+
+    fireEvent.click(hideThumbnailButton);
   },
 };
 
@@ -27,7 +51,7 @@ test("replacement item can be clicked", () => {
 
   const reactOriginalPair = injectElement({
     currentDocument: document,
-    jsx: <button onClick={mockFunction}>{ActionNames.showThumbnail}</button>,
+    jsx: <button onClick={mockFunction}>{ActionNames.toggleThumbnail}</button>,
     index: 0,
   });
   showReactElement({elementPair: reactOriginalPair});
