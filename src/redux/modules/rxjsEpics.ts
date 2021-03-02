@@ -12,6 +12,8 @@ import {
   showOriginalElement,
 } from "../../replace-element";
 
+import DOMSelectors from "../../tools/youtube-element-selectors";
+
 let DomElements = [];
 //Dom nodes cant goin app state or store
 //store effect data here
@@ -58,17 +60,18 @@ export const initializeAppInjectEpic = (action$: any) =>
       // action$.document.
       effectStore.document = action.document;
 
-      effectStore
-        .document!.querySelectorAll("ytd-thumbnail")
-        .forEach((element, thumbnailIndex) => {
+      DOMSelectors.getAllThumbnails(effectStore.document!).forEach(
+        (element, thumbnailIndex) => {
           const elementPair = injectElement({
-            currentDocument: effectStore.document,
+            currentDocument: effectStore.document!,
             jsx: action.renderAtIndex(thumbnailIndex),
             index: thumbnailIndex,
           });
           hideOriginalElement({elementPair});
           effectStore.elementPairs.push(elementPair);
-        });
+        },
+      );
+      action.onComplete();
     }),
     map((action: any) => {
       return {

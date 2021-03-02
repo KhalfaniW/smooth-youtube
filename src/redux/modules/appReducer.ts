@@ -8,10 +8,12 @@ enum ThumbnailStates {
 export function reduceAppState(
   state: {
     totalThumnailsHidden: number;
+    isInitialized: boolean;
     thumbnailStates: Array<ThumbnailStates>;
   } = {
     totalThumnailsHidden: 0,
     thumbnailStates: [],
+    isInitialized: false,
   },
   action: any,
 ): any {
@@ -27,6 +29,7 @@ export function reduceAppState(
         return draftState;
 
       case "INITIALIZE_HANDLED":
+        draftState.isInitialized = true;
         draftState.thumbnailStates = _.range(
           draftState.thumbnailStates.length,
           action.thumbnailCount,

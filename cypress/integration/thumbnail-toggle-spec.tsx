@@ -6,12 +6,13 @@ import React from "react";
 import {ActionNames} from "../../src/thumbnail-hider";
 import {initializeStoreIntoDOM} from "../../src";
 import {injectElement, showOriginalElement} from "../../src/replace-element";
-
+import DOMSelectors from "../../src/tools/youtube-element-selectors";
 const thumbnailReplacementText = "Smoke Weed Everyday";
 const selectors = {
-  thumbnailContainer: "ytd-thumbnail",
-  thumbnail: "ytd-thumbnail>a#thumbnail",
-  reactThumbnailReplacementContainer: `ytd-thumbnail>div[name="thumbnail-react-container"]`,
+  thumbnailContainer: DOMSelectors.thumbnailContainer,
+  thumbnail: DOMSelectors.thumbnail,
+  reactThumbnailReplacementContainer:
+    DOMSelectors.reactThumbnailReplacementContainer,
 };
 const getElementAtIndex = ({
   selector,
@@ -72,7 +73,7 @@ describe("App", function() {
     initializeSite();
     let thumbnailPair;
     cy.document().then((document) => {
-      initializeStoreIntoDOM({document: document});
+      initializeStoreIntoDOM({currentDocument: document});
     });
   });
 });

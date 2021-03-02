@@ -1,6 +1,6 @@
-import {ReactComponent} from "*.svg";
-import React, {ReactElement} from "react";
+import {ReactElement} from "react";
 import ReactDOM from "react-dom";
+import DOMSelectors from "./tools/youtube-element-selectors";
 
 export interface HTMLElementReplacementPair {
   originalElementToReplace: HTMLElement;
@@ -103,9 +103,9 @@ export function getThumbnailAndThumbnailContainer({
   currentDocument: Document;
   thumbnailIndex: number;
 }) {
-  const thumbnailContainer = currentDocument.getElementsByTagName(
-    "ytd-thumbnail",
-  )[thumbnailIndex] as HTMLElement;
+  const thumbnailContainer = DOMSelectors.getAllThumbnails(currentDocument)[
+    thumbnailIndex
+  ] as HTMLElement;
   const originalThumbnail = thumbnailContainer.querySelector<HTMLElement>(
     "#thumbnail",
   );

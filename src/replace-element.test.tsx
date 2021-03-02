@@ -9,13 +9,13 @@ import {
   showOriginalElement,
   showReactElement,
 } from "./replace-element";
-import {insertYoutubeHtml} from "./__test__/youtube-tools";
+import {insertYouTubeHTML} from "./__test__/youtube-tools";
 
 const testContent = "FAKE text Content id=AFeEFWEfSDda";
 
 test("get thumbnail successfuly", () => {
   expect(document.body.innerHTML.length).toBeLessThan(10);
-  insertYoutubeHtml();
+  insertYouTubeHTML();
   expect(document.body.innerHTML.length).toBeGreaterThan(1000);
   const elementPair = getThumbnailAndThumbnailContainer({
     currentDocument: document,
@@ -26,7 +26,7 @@ test("get thumbnail successfuly", () => {
   expect(elementPair.thumbnailContainer).toBeInTheDocument();
 });
 test("replace one thumbnail item ", () => {
-  insertYoutubeHtml();
+  insertYouTubeHTML();
   const reactOriginalPair = injectElement({
     currentDocument: document,
     jsx: <>{testContent}</>,
@@ -55,7 +55,7 @@ test("replacement item can be clicked", () => {
     fireEvent.click(showThumbnailButton);
   };
 
-  insertYoutubeHtml();
+  insertYouTubeHTML();
   reactOriginalPair = injectElement({
     currentDocument: document,
     jsx: <button onClick={mockFunction}>{ActionNames.toggleThumbnail}</button>,

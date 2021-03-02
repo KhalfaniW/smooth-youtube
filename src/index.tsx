@@ -3,23 +3,28 @@ import React from "react";
 
 import {ThumbnailHider} from "./thumbnail-hider";
 import store from "./redux/modules/store";
-
-export function initializeStoreIntoDOM(
-  {renderAtThumbnailIndex, document} = {
-    renderAtThumbnailIndex: (index: number) => (
-      <Provider store={store}>
-        <ThumbnailHider index={index} />
-      </Provider>
-    ),
-    document: document,
-  },
-) {
+interface IntializerSettings {
+  onComplete: () => void;
+  renderAtThumbnailIndex: (index: number) => JSX;
+  currentDocument: Document;
+}
+export function initializeStoreIntoDOM({
+  renderAtThumbnailIndex = (index: number) => (
+    <Provider store={store}>
+      <ThumbnailHider index={index} />
+    </Provider>
+  ),
+  currentDocument = document,
+  onComplete = () => {},
+}: InitializerSettings = {}) {
   store.dispatch({
     type: "RESET",
   });
+
   store.dispatch({
     type: "INITIALIZE",
-    document: document,
+    document: currentDocument,
+    onComplete,
     renderAtIndex:
       renderAtThumbnailIndex ||
       ((index: number) => (

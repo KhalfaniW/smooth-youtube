@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 
-export const insertYoutubeHtml = () => {
+export const insertYouTubeHTML = () => {
   const youtubeHtml = fs.readFileSync(
     path.resolve(__dirname, "./__mocks__/youtube/youtube-snapshot.html"),
   );

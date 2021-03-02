@@ -13,7 +13,7 @@ import {
   getTotalThumbnailsHidden,
 } from "./redux/modules/rxjsEpics";
 import {injectElement, showReactElement} from "./replace-element";
-import {insertYoutubeHtml} from "./__test__/youtube-tools";
+import {insertYouTubeHTML} from "./__test__/youtube-tools";
 import configureStore from "./redux/configure-store";
 
 export const userActions = {
@@ -47,7 +47,7 @@ export const userActions = {
 
 test("replacement item can be clicked", () => {
   const mockFunction = jest.fn(() => {});
-  insertYoutubeHtml();
+  insertYouTubeHTML();
 
   const reactOriginalPair = injectElement({
     currentDocument: document,
@@ -62,7 +62,7 @@ test("replacement item can be clicked", () => {
 });
 
 test.skip("replace 1 then show thumbnail", () => {
-  insertYoutubeHtml();
+  insertYouTubeHTML();
 
   const elementPair = injectElement({
     currentDocument: document,
