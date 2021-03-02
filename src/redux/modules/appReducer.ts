@@ -57,8 +57,3 @@ export function reduceAppState(
     }
   });
 }
-function createHiddenThumbnailAtIndex(index) {
-  return {
-    thumbnailState: ThumbnailStates.HIDDEN,
-  };
-}

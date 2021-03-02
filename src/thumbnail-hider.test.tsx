@@ -62,25 +62,24 @@ test("replacement item can be clicked", () => {
 });
 
 test.skip("replace 1 then show thumbnail", () => {
-  insertYouTubeHTML();
+  /* insertYouTubeHTML();
 
-  const elementPair = injectElement({
-    currentDocument: document,
-    jsx: (
-      <Provider store={initalTestStore}>
-        <ThumbnailHider index={0} />
-      </Provider>
-    ),
-    index: 0,
-  });
+     * const elementPair = injectElement({
+     *   currentDocument: document,
+     *   jsx: (
+     *     <Provider store={store}>
+     *       <ThumbnailHider index={0} />
+     *     </Provider>
+     *   ),
+     *   index: 0,
+     * });
 
-  expect(userActions.getIsThumbnailShown(elementPair.reactComponentContainer));
+     * expect(userActions.getIsThumbnailShown(elementPair.reactComponentContainer));
 
-  userActions.hideThumbnail(elementPair.reactComponentContainer);
-  /* userActions.hideThumbnail(elementPair.reactComponentContainer); */
-
+     * userActions.hideThumbnail(elementPair.reactComponentContainer);
+     * userActions.hideThumbnail(elementPair.reactComponentContainer); */
   //TODO falsify
-  expect(userActions.getIsThumbnailShown(elementPair.reactComponentContainer));
+  /* expect(userActions.getIsThumbnailShown(elementPair.reactComponentContainer));  */
 });
 test("replace 10 then show 5 thumbnails", () => {
   // expect().toBe();

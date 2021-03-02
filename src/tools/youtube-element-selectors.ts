@@ -1,7 +1,5 @@
 const selectors = {
-  allThumbnailContainer: () => {
-    throw Error("impelemnt");
-  },
+  allThumbnailContainer: "div#contents.ytd-rich-grid-renderer",
   thumbnailSelector: "ytd-thumbnail",
   thumbnailContainer: "ytd-thumbnail",
   thumbnail: "ytd-thumbnail>a#thumbnail",

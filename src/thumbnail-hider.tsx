@@ -1,16 +1,13 @@
 import {useDispatch, useSelector} from "react-redux";
 import React from "react";
 
-import {getEffectStore} from "./redux/modules/rxjsEpics";
-import {getIsOriginalElementHidden} from "./replace-element";
-
 export const ActionNames = {
   toggleThumbnail: "Toggle Thumbnail",
   showThumbnailButtonText: "Show Thumbnail",
   hideThumbnailButtonText: "Hide Thumbnail",
 };
 
-export const ThumbnailHider: React.FC = ({index}: {index: number}) => {
+export const ThumbnailHider: React.FC<{index: number}> = ({index}) => {
   const {count} = useSelector((state: any) => {
     return {
       count: state.totalThumnailsHidden,
