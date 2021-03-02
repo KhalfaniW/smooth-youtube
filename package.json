@@ -28,6 +28,7 @@
     "build": "craco build",
     "test": "craco test",
     "eject": "craco eject",
+    "build-script": "webpack --config webpack.config.js",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
     "test:debug": "craco --inspect-brk test --runInBand --no-cache"
@@ -59,6 +60,8 @@
     "jest-puppeteer": "^4.4.0",
     "path": "^0.12.7",
     "redux-mock-store": "^1.5.4",
-    "ts-jest": "^26.5.2"
+    "ts-jest": "^26.5.2",
+    "ts-loader": "^8.0.17",
+    "webpack-cli": "^4.5.0"
   }
 }
