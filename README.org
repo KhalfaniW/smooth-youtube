@@ -1,0 +1,16 @@
+* Goal
+ Organize youtube reccomendations to 
+    + reduce randomness
+      + Reduce slot machine style randomness
+        Don't make it random and boring(loss) until new good video pops up (win)
+      + Convert it into a reddit/news style
+        1 new set of random videos in the day 
+    + Elimate reccomended vidos that you *do not want to watch* until you are too bored to resits
+    + eliminate reshowing the same things as if they were new
+       (show same video in 4th-5th position untiil you click it)
+* How  
+   + Every new relaoad show only difference between last times 
+     * Add counter to every show
+   + hide thumbnails unless requested to reduce imformation overload and stess
+   + Hide reccomendations that you don't want to watch (opt in to show)
+   + Segregate new reccomendations
