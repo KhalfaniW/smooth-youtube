@@ -18,11 +18,11 @@ import configureStore from "./redux/configure-store";
 
 export const userActions = {
   hideThumbnail: (container: HTMLElement) => {
-    const showThumbnailButton = getByText(
+    const hideThumbnailButton = getByText(
       container,
-      ActionNames.toggleThumbnail,
+      ActionNames.hideThumbnailButtonText,
     );
-    fireEvent.click(showThumbnailButton);
+    fireEvent.click(hideThumbnailButton);
   },
   getIsThumbnailShown: (container: HTMLElement) => {
     return queryByText(container, "Thumbnail Is Shown") !== null;
@@ -51,7 +51,11 @@ test("replacement item can be clicked", () => {
 
   const reactOriginalPair = injectElement({
     currentDocument: document,
-    jsx: <button onClick={mockFunction}>{ActionNames.toggleThumbnail}</button>,
+    jsx: (
+      <button onClick={mockFunction}>
+        {ActionNames.hideThumbnailButtonText}
+      </button>
+    ),
     index: 0,
   });
   showReactElement({elementPair: reactOriginalPair});
@@ -61,26 +65,28 @@ test("replacement item can be clicked", () => {
   expect(mockFunction).toHaveBeenCalledTimes(1);
 });
 
-test.skip("replace 1 then show thumbnail", () => {
-  /* insertYouTubeHTML();
+test("replace 1 then show thumbnail", () => {
+  insertYouTubeHTML();
+  const store = configureStore();
+  //TODO fix
 
-     * const elementPair = injectElement({
-     *   currentDocument: document,
-     *   jsx: (
-     *     <Provider store={store}>
-     *       <ThumbnailHider index={0} />
-     *     </Provider>
-     *   ),
-     *   index: 0,
-     * });
+  const elementPair = injectElement({
+    currentDocument: document,
+    jsx: (
+      <Provider store={store}>
+        <ThumbnailHider index={0} />
+      </Provider>
+    ),
+    index: 0,
+  });
 
-     * expect(userActions.getIsThumbnailShown(elementPair.reactComponentContainer));
+  expect(userActions.getIsThumbnailShown(elementPair.reactComponentContainer));
 
-     * userActions.hideThumbnail(elementPair.reactComponentContainer);
-     * userActions.hideThumbnail(elementPair.reactComponentContainer); */
-  //TODO falsify
+  userActions.hideThumbnail(elementPair.reactComponentContainer);
+  userActions.hideThumbnail(elementPair.reactComponentContainer);
   /* expect(userActions.getIsThumbnailShown(elementPair.reactComponentContainer));  */
 });
 test("replace 10 then show 5 thumbnails", () => {
+  //TODO find in timemachine
   // expect().toBe();
 });

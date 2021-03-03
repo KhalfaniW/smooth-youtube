@@ -2,7 +2,12 @@ import {ofType} from "redux-observable";
 
 import {tap, mapTo, map} from "rxjs/operators";
 
-import {EffectStore, effectStore} from "./effectStore";
+import {
+  retrieveEffectStore,
+  updateEffectStore,
+  EffectStore,
+} from "./effectStore";
+
 import {
   ElementShown,
   getElementShown,
@@ -11,14 +16,13 @@ import {
   injectElement,
   showOriginalElement,
 } from "../../replace-element";
-
 import DOMSelectors from "../../tools/youtube-element-selectors";
 
 let DomElements = [];
 //Dom nodes cant goin app state or store
 //store effect data here
 export function getEffectStore() {
-  return effectStore;
+  throw Error("do not implemented");
 }
 const safelyEndEpic = () => {
   return map((action: any) => {
@@ -58,6 +62,7 @@ export const initializeAppInjectEpic = (action$: any) =>
 
     tap((action: any) => {
       // action$.document.
+      const effectStore = retrieveEffectStore();
       effectStore.document = action.document;
 
       DOMSelectors.getAllThumbnails(effectStore.document!).forEach(
@@ -71,12 +76,13 @@ export const initializeAppInjectEpic = (action$: any) =>
           effectStore.elementPairs.push(elementPair);
         },
       );
+      updateEffectStore(effectStore);
       action.onComplete();
     }),
     map((action: any) => {
       return {
         type: action.type + "_HANLDED",
-        thumbnailCount: effectStore.elementPairs,
+        thumbnailCount: retrieveEffectStore().elementPairs,
       };
     }),
   );
@@ -86,10 +92,9 @@ export const showThumbnailEpic = (action$: any) =>
     ofType("SHOW_THUMBNAIL"),
     tap((action: any) => {
       showOriginalElement({
-        elementPair: effectStore.elementPairs[action.index],
+        elementPair: retrieveEffectStore().elementPairs[action.index],
       });
     }),
-    mapTo({type: "4HIDE_THUMBNAIL"}),
 
     safelyEndEpic(),
   );
@@ -99,7 +104,7 @@ export const hideThumbnailEpic = (action$: any) =>
     ofType("HIDE_THUMBNAIL"),
     tap((action: any) => {
       hideOriginalElement({
-        elementPair: effectStore.elementPairs[action.index],
+        elementPair: retrieveEffectStore().elementPairs[action.index],
       });
     }),
     safelyEndEpic(),

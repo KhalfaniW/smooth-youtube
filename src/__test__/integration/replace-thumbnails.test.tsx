@@ -2,52 +2,63 @@ import {Provider} from "react-redux";
 import React from "react";
 
 import {ThumbnailHider} from "../../thumbnail-hider";
-import {
-  getEffectStore,
-  getTotalThumbnailsHidden,
-} from "../../redux/modules/rxjsEpics";
-import {initializeEffectStore} from "../../redux/modules/effectStore";
+import {getTotalThumbnailsHidden} from "../../redux/modules/rxjsEpics";
+
 import {initializeStoreIntoDOM} from "../..";
 import {insertYouTubeHTML} from "../youtube-tools";
-import configureStore from "redux-mock-store"; //ES6 modules
+/* import configureStore from "redux-mock-store"; //ES6 modules */
 import {userActions} from "../../thumbnail-hider.test";
-import store from "../../redux/modules/store";
 import DOMSelectors from "../../tools/youtube-element-selectors";
+import configureStore from "../../redux/configure-store";
 
-const youtubeThumbnailSelector = DOMSelectors.thumbnailSelector;
 jest.setTimeout(10 * 1000);
 
-test("initialize by replacing all thumbnails", (done) => {
-  insertYouTubeHTML();
-  initializeEffectStore();
-  initializeStoreIntoDOM({
-    onComplete: () => {
-      const totalThumbnailsInMockDocument = document.querySelectorAll(
-        youtubeThumbnailSelector,
-      ).length;
+jest.mock("../../redux/modules/effectStore", () => ({
+  ...jest.requireActual("../../redux/modules/effectStore"),
+  updateEffectStore: jest.fn(),
+  retrieveEffectStore: jest.fn(),
+}));
 
-      expect(DOMSelectors.getAllThumbnails(document)).toHaveLength(74);
-      expect(getEffectStore().elementPairs).toHaveLength(
-        totalThumbnailsInMockDocument,
-      );
-      expect(getTotalThumbnailsHidden(getEffectStore())).toEqual(
-        totalThumbnailsInMockDocument,
-      );
-      done();
-    },
-  });
+import {
+  EffectStore,
+  updateEffectStore,
+  retrieveEffectStore,
+  createEffectStore,
+} from "../../redux/modules/effectStore";
+
+test("initialize by replacing all thumbnails", async () => {
+  const store = configureStore();
+  let effectStoreObject = new TestEffectStoreObject();
+  const obtainEffectStore = () => effectStoreObject.retrieveEffectStore();
+
+  insertYouTubeHTML();
+  await initializeStoreIntoDOM({currentStore: store});
+
+  const totalThumbnailsInMockDocument = document.querySelectorAll(
+    DOMSelectors.thumbnailSelector,
+  ).length;
+
+  expect(DOMSelectors.getAllThumbnails(document)).toHaveLength(74);
+
+  expect(obtainEffectStore().elementPairs).toHaveLength(
+    totalThumbnailsInMockDocument,
+  );
+
+  expect(getTotalThumbnailsHidden(obtainEffectStore())).toEqual(
+    totalThumbnailsInMockDocument,
+  );
 });
 
-const makeMockStore = configureStore();
-test.only("hide and show some thumbnails", (done) => {
+test("hide and show some thumbnails", async () => {
   insertYouTubeHTML();
-  initializeEffectStore();
-  initializeStoreIntoDOM({
-    onComplete: () => {},
-  });
+  const store = configureStore();
+  let effectStoreObject = new TestEffectStoreObject();
+  const obtainEffectStore = () => effectStoreObject.retrieveEffectStore();
+
+  await initializeStoreIntoDOM({currentStore: store});
   //TODO figure out how to put this in the on complete function
   const totalThumbnailsInMockDocument = document.querySelectorAll(
-    youtubeThumbnailSelector,
+    DOMSelectors.thumbnailSelector,
   ).length;
 
   [1, 2, 3].forEach((index) => {
@@ -57,7 +68,7 @@ test.only("hide and show some thumbnails", (done) => {
     });
   });
 
-  expect(getTotalThumbnailsHidden(getEffectStore())).toBe(
+  expect(getTotalThumbnailsHidden(obtainEffectStore())).toBe(
     totalThumbnailsInMockDocument - 3,
   );
   [2, 3, 40].forEach((index) => {
@@ -67,17 +78,19 @@ test.only("hide and show some thumbnails", (done) => {
     });
   });
 
-  expect(getTotalThumbnailsHidden(getEffectStore())).toBe(
+  expect(getTotalThumbnailsHidden(obtainEffectStore())).toBe(
     totalThumbnailsInMockDocument - 1,
   );
-  done();
 });
-test("element is in DOM", (done) => {
+test("element is in DOM", async () => {
   const testString = "* testString *";
+  const store = configureStore();
+  const effectStoreObject = new TestEffectStoreObject();
+  const obtainEffectStore = () => effectStoreObject.retrieveEffectStore();
 
   insertYouTubeHTML();
-  initializeEffectStore();
-  initializeStoreIntoDOM({
+  //initializeEffectStore();
+  await initializeStoreIntoDOM({
     renderAtThumbnailIndex: (index: number) => {
       return (
         <Provider store={store}>
@@ -86,54 +99,56 @@ test("element is in DOM", (done) => {
         </Provider>
       );
     },
-    onComplete: () => {
-      const containerElement = getEffectStore().elementPairs[0]
-        .reactComponentContainer;
-      expect(containerElement.innerHTML).toContain(testString);
-
-      done();
-    },
+    currentStore: store,
   });
+  const containerElement = obtainEffectStore().elementPairs[0]
+    .reactComponentContainer;
+  expect(containerElement.innerHTML).toContain(testString);
 });
 
-test("hide and show some thumbnails as user", (done) => {
+test("hide and show some thumbnails as user", async () => {
+  const store = configureStore();
+  const effectStoreObject = new TestEffectStoreObject();
+  const obtainEffectStore = () => effectStoreObject.retrieveEffectStore();
+
   insertYouTubeHTML();
-  initializeEffectStore();
-  initializeStoreIntoDOM({
-    onComplete: () => {
-      const totalThumbnailsInMockDocument = document.querySelectorAll(
-        youtubeThumbnailSelector,
-      ).length;
+  //initializeEffectStore();
+  await initializeStoreIntoDOM({
+    currentStore: store,
+  });
+  const totalThumbnailsInMockDocument = document.querySelectorAll(
+    DOMSelectors.thumbnailSelector,
+  ).length;
 
-      [1].forEach((index) => {
-        userActions.showThumbnailAtIndex(
-          getEffectStore().elementPairs[index].reactComponentContainer,
-          0,
-        );
-      });
+  [1].forEach((index) => {
+    userActions.showThumbnailAtIndex(
+      obtainEffectStore().elementPairs[index].reactComponentContainer,
+      0,
+    );
+  });
 
-      expect(getTotalThumbnailsHidden(getEffectStore())).toBe(
-        totalThumbnailsInMockDocument - 1,
-      );
+  expect(getTotalThumbnailsHidden(obtainEffectStore())).toBe(
+    totalThumbnailsInMockDocument - 1,
+  );
 
-      [1].forEach((index) => {
-        userActions.hideThumbnailAtIndex(
-          getEffectStore().elementPairs[index].reactComponentContainer,
-          0,
-        );
+  [1].forEach((index) => {
+    userActions.hideThumbnailAtIndex(
+      obtainEffectStore().elementPairs[index].reactComponentContainer,
+      0,
+    );
 
-        /* userActions.hideThumbnailAtIndex(document.body, index); */
-      });
+    /* userActions.hideThumbnailAtIndex(document.body, index); */
+  });
 
-      expect(getTotalThumbnailsHidden(getEffectStore())).toBe(
-        totalThumbnailsInMockDocument,
-      );
+  expect(getTotalThumbnailsHidden(obtainEffectStore())).toBe(
+    totalThumbnailsInMockDocument,
+  );
 
-      /* [1, 2, 3].forEach((index) => {
+  /* [1, 2, 3].forEach((index) => {
      *   userActions.toggleThumbnailAtIndex(document.body, index);
      * });
 
-     * expect(getTotalThumbnailsHidden(getEffectStore())).toBe(
+     * expect(getTotalThumbnailsHidden(obtainEffectStore())).toBe(
      *   totalThumbnailsInMockDocument - 3,
      * );
 
@@ -141,10 +156,24 @@ test("hide and show some thumbnails as user", (done) => {
      *   userActions.toggleThumbnailAtIndex(document.body, index);
      * });
 
-     * expect(getTotalThumbnailsHidden(getEffectStore())).toBe(
+     * expect(getTotalThumbnailsHidden(obtainEffectStore())).toBe(
      *   totalThumbnailsInMockDocument - 1,
      * ); */
-      done();
-    },
-  });
 });
+
+function TestEffectStoreObject() {
+  const mockedUpdateEffectStore = updateEffectStore as jest.Mock<void>;
+  const mockedRetrieveEffectStore = retrieveEffectStore as jest.Mock<
+    EffectStore
+  >;
+  this.effectStore = createEffectStore();
+  this.updateEffectStore = (newEffectStore) => {
+    this.effectStore = newEffectStore;
+  };
+  this.retrieveEffectStore = (newEffectStore) => {
+    return this.effectStore;
+  };
+
+  mockedUpdateEffectStore.mockImplementation(this.updateEffectStore);
+  mockedRetrieveEffectStore.mockImplementation(this.retrieveEffectStore);
+}

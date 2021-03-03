@@ -1,15 +1,14 @@
 import {createEpicMiddleware} from "redux-observable";
 import {createStore, applyMiddleware} from "redux";
 
-import { initializeEffectStore } from './modules/effectStore';
+import {createEffectStore, updateEffectStore} from "./modules/effectStore";
 import {rootEpic, rootReducer} from "./modules/root";
 
-const epicMiddleware = createEpicMiddleware();
-
 export default function configureStore() {
+  const epicMiddleware = createEpicMiddleware();
   const store = createStore(rootReducer, applyMiddleware(epicMiddleware));
 
   epicMiddleware.run(rootEpic);
-  initializeEffectStore();
+  updateEffectStore(createEffectStore());
   return store;
 }

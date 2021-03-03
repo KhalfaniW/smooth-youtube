@@ -1,5 +1,8 @@
-import { HTMLElementReplacementPair } from '../../replace-element';
+import {HTMLElementReplacementPair} from "../../replace-element";
 
+export interface EffectAction {
+  any;
+}
 export interface EffectStore {
   elementPairs: Array<HTMLElementReplacementPair>;
   document?: Document;
@@ -7,10 +10,16 @@ export interface EffectStore {
 //TODO make redux like
 export let effectStore: EffectStore;
 
-export function initializeEffectStore() {
-  effectStore = {
+export function createEffectStore(): EffectStore {
+  return {
     elementPairs: [],
     document: undefined,
   };
-  return;
+}
+export function updateEffectStore(newEffectStore: EffectStore) {
+  effectStore = newEffectStore;
+}
+
+export function retrieveEffectStore(): EffectStore {
+  return effectStore;
 }
