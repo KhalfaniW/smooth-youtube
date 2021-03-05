@@ -1,163 +1,56 @@
 import {ReactElement} from "react";
 import ReactDOM from "react-dom";
 import DOMSelectors from "./tools/youtube-element-selectors";
+import {
+  hideOriginalElement,
+  showOriginalElement,
+  getIsOriginalElementHidden,
+  injectReactInto,
+  showReactElement,
+  ElementShown,
+  getElementShown,
+} from "inject-react";
+import * as ij from "inject-react";
 
 export interface HTMLElementReplacementPair {
   originalElementToReplace: HTMLElement;
   reactComponentContainer: HTMLElement;
 }
-export enum ElementShown {
-  React = "React",
-  Original = "Original",
-}
 
-/* export function injectElement({currentDocument: Document}) { */
+export {
+  ElementShown,
+  showReactElement,
+  getIsOriginalElementHidden,
+  hideOriginalElement,
+  showOriginalElement,
+  getElementShown,
+};
+
 export function injectElement({
   currentDocument,
   jsx,
-  index = 1,
+  index = 2,
 }: {
   currentDocument: Document;
   jsx: ReactElement;
   index: number;
 }): HTMLElementReplacementPair {
-  const {
-    thumbnailContainer,
-    originalThumbnail,
-  } = getThumbnailAndThumbnailContainer({
-    currentDocument,
-    thumbnailIndex: index,
-  });
-
-  const reactThumbnailParent = buildReactComponentContainer({
-    originalElementContainer: thumbnailContainer,
-    currentDocument,
-    jsx: jsx,
-    elementIdName: "thumbnail",
-  });
-  const thumbnailReplacementPair: HTMLElementReplacementPair = {
-    originalElementToReplace: originalThumbnail!,
-    reactComponentContainer: reactThumbnailParent!,
-  };
-  /* showReactElement({elementPair: thumbnailReplacementPair}); */
-
-  return thumbnailReplacementPair;
-}
-
-export function buildReactComponentContainer({
-  originalElementContainer,
-  currentDocument,
-  jsx,
-  elementIdName,
-}: {
-  originalElementContainer: HTMLElement;
-  currentDocument: Document;
-  jsx: ReactElement;
-  elementIdName: string;
-}): HTMLElement {
-  const reactContainer = buildReactContainer({
-    currentDocument,
-    elementIdName,
-  });
-  originalElementContainer.appendChild(reactContainer);
-  ReactDOM.render(jsx, reactContainer);
-  return reactContainer;
-}
-export function getIsOriginalElementHidden({
-  elementPair,
-}: {
-  elementPair: HTMLElementReplacementPair;
-}): Boolean {
-  const isOriginalShown =
-    elementPair.originalElementToReplace.style.visibility === "hidden";
-  return isOriginalShown;
-}
-
-export function getElementShown({
-  elementPair,
-}: {
-  elementPair: HTMLElementReplacementPair;
-}): ElementShown {
-  const isOriginalHidden =
-    elementPair.originalElementToReplace.style.visibility === "hidden";
-  const isReactHidden =
-    elementPair.originalElementToReplace.style.visibility === "react";
-
-  if (isReactHidden && isOriginalHidden) {
-    throw Error("Both react and originial elements are hidden");
-  }
-  if (!isReactHidden && !isOriginalHidden) {
-    throw Error("Both react and originial elements are visibile");
-  }
-
-  if (isOriginalHidden) {
-    return ElementShown.React;
-  }
-
-  return ElementShown.Original;
-}
-export function getThumbnailAndThumbnailContainer({
-  currentDocument,
-  thumbnailIndex,
-}: {
-  currentDocument: Document;
-  thumbnailIndex: number;
-}) {
   const thumbnailContainer = DOMSelectors.getAllThumbnails(currentDocument)[
-    thumbnailIndex
+    index
   ] as HTMLElement;
   const originalThumbnail = thumbnailContainer.querySelector<HTMLElement>(
     "#thumbnail",
   );
-  return {
-    thumbnailContainer,
-    originalThumbnail,
-  };
-}
-export function getReactComponent({
-  elementPair,
-}: {
-  elementPair: HTMLElementReplacementPair;
-}) {
-  const reactElementParentWithOneReactChild =
-    elementPair.reactComponentContainer;
-  return reactElementParentWithOneReactChild.children[0];
-}
 
-function buildReactContainer({
-  currentDocument,
-  elementIdName,
-}: {
-  currentDocument: Document;
-  elementIdName: string;
-}) {
-  const thumbnailReactContainer = currentDocument.createElement("div");
-  thumbnailReactContainer.setAttribute(
-    "name",
-    `${elementIdName}-react-container`,
-  );
-  return thumbnailReactContainer;
-}
+  const thumbnailReplacementPair: HTMLElementReplacementPair = injectReactInto({
+    immediateParentNode: thumbnailContainer,
+    nonRecursiveChildFilterFunction: (element: HTMLElement) => {
+      return element === originalThumbnail;
+    },
+    previousElementPairs: [],
+    renderAtIndex: (index: number) => jsx,
+    ReactDomRenderFunction: ReactDOM.render,
+  })[0];
 
-export function showReactElement({
-  elementPair,
-}: {
-  elementPair: HTMLElementReplacementPair;
-}) {
-  elementPair.originalElementToReplace.style.visibility = "hidden";
-}
-export function hideOriginalElement({
-  elementPair,
-}: {
-  elementPair: HTMLElementReplacementPair;
-}) {
-  elementPair.originalElementToReplace.style.visibility = "hidden";
-}
-
-export function showOriginalElement({
-  elementPair,
-}: {
-  elementPair: HTMLElementReplacementPair;
-}) {
-  elementPair.originalElementToReplace.style.visibility = "";
+  return thumbnailReplacementPair;
 }

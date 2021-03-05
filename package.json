@@ -1,11 +1,10 @@
 {
-  "name": "cypress-youtube",
+  "name": "smooth-thumbnail",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
     "@craco/craco": "^6.1.1",
     "@testing-library/react": "^11.2.2",
-    "@testing-library/user-event": "^12.6.0",
     "@types/jest": "^26.0.19",
     "@types/node": "^12.12.45",
     "@types/react": "^17.0.0",
@@ -13,6 +12,7 @@
     "cypress": "^6.2.0",
     "eslint-plugin-cypress": "^2.11.2",
     "immer": "^8.0.1",
+    "inject-react": "file:../../tools/inject-react",
     "lodash": "^4.17.21",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",

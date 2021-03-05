@@ -55,7 +55,11 @@ test("hide and show some thumbnails", async () => {
   let effectStoreObject = new TestEffectStoreObject();
   const obtainEffectStore = () => effectStoreObject.retrieveEffectStore();
 
-  await initializeStoreIntoDOM({currentStore: store});
+  await initializeStoreIntoDOM({
+    currentStore: store,
+    currentDocument: document,
+  });
+
   //TODO figure out how to put this in the on complete function
   const totalThumbnailsInMockDocument = document.querySelectorAll(
     DOMSelectors.thumbnailSelector,
