@@ -1,55 +1,65 @@
 import * as _ from "lodash";
 import produce from "immer";
-
+import {VideoInfo} from "youtube-recommendation-scraper";
 enum ThumbnailStates {
   HIDDEN = "hidden",
   SHOWN = "shown",
 }
+type VideoIdAndRecommendationTime = {
+  id: string;
+  timeSinceEpoch: number;
+};
+type VideoManagerState = {
+  hasFetchedNewVideoInfos: boolean;
+  hasObtainedSavedData: boolean;
+  isSaveRecommendationsActive: boolean;
+  allVideoInfos: Array<VideoInfo>;
+  hiddenVideoIds: Array<string>;
+  recommendedVideoIds: Array<string>;
+
+  //use this data to derive frequency and importance of a recommendation
+  // recommendationsAndTime: Array<VideoIdAndRecommendationTime>;
+};
+
 export function reduceAppState(
-  state: {
-    totalThumnailsHidden: number;
-    isInitialized: boolean;
-    thumbnailStates: Array<ThumbnailStates>;
-  } = {
-    totalThumnailsHidden: 0,
-    thumbnailStates: [],
-    isInitialized: false,
+  state: VideoManagerState = {
+    hasObtainedSavedData: false,
+    isSaveRecommendationsActive: false,
+    hasFetchedNewVideoInfos: false,
+    allVideoInfos: [],
+    recommendedVideoIds: [],
+    hiddenVideoIds: [],
+    // recommendationsAndTime: [],
   },
   action: any,
 ): any {
-  return produce(state, (draftState: any) => {
+  return produce(state, (draftState: VideoManagerState) => {
     switch (action.type) {
       case "RESET":
         const resetStateValue = undefined;
         return resetStateValue;
-
-      case "PONG":
+      case "FETCH_ID_INFO":
+        draftState.isSaveRecommendationsActive = true;
         return draftState;
-      case "PING":
+      case "FETCHED_NEW_VIDEOINFOS":
+        draftState.hasObtainedSavedData = true;
         return draftState;
-
-      case "INITIALIZE_HANDLED":
-        draftState.isInitialized = true;
-        draftState.thumbnailStates = _.range(
-          draftState.thumbnailStates.length,
-          action.thumbnailCount,
-        ).map((thumbnailIndex: number) => ThumbnailStates.HIDDEN);
+      case "SET_CURRENT_RECCOMENDATIONS":
+        draftState.recommendedVideoIds = action.recommendedVideoIds;
         return draftState;
-      case "ADD_THUMBNAIL":
-        draftState.push(action.thumbnailIndex);
+      case "SAVE_RECOMMENDATIONS":
+        draftState.isSaveRecommendationsActive = true;
         return draftState;
-      case "HIDE_THUMBNAIL":
-        draftState.totalThumnailsHidden++;
-        draftState.thumbnailStates[action.index] = ThumbnailStates.HIDDEN;
+      case "SAVE_RECOMMENDATIONS_HANDLED":
+        draftState.isSaveRecommendationsActive = false;
         return draftState;
 
-      case "SHOW_THUMBNAIL":
-        draftState.totalThumnailsHidden = Math.max(
-          draftState.totalThumnailsHidden - 1,
-          0,
+      case "OBTAINED_SAVED_VIDEOINFOS":
+        draftState.hasObtainedSavedData = true;
+        draftState.allVideoInfos.push(...action.savedVideoInfos);
+        draftState.hiddenVideoIds.push(
+          ...draftState.allVideoInfos.map((videoInfo) => videoInfo.id),
         );
-        draftState.thumbnailStates[action.index] = ThumbnailStates.SHOWN;
-
         return draftState;
 
       default:

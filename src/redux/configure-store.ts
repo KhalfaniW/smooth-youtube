@@ -3,12 +3,11 @@ import {createStore, applyMiddleware} from "redux";
 
 import {createEffectStore, updateEffectStore} from "./modules/effectStore";
 import {rootEpic, rootReducer} from "./modules/root";
+import thunk from "redux-thunk";
 
 export default function configureStore() {
-  const epicMiddleware = createEpicMiddleware();
-  const store = createStore(rootReducer, applyMiddleware(epicMiddleware));
+  const store = createStore(rootReducer, applyMiddleware(thunk));
 
-  epicMiddleware.run(rootEpic);
   updateEffectStore(createEffectStore());
   return store;
 }

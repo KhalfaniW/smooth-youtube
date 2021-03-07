@@ -1,5 +1,5 @@
 {
-  "name": "smooth-thumbnail",
+  "name": "smooth-recommendation",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -20,13 +20,16 @@
     "react-scripts": "4.0.3",
     "redux": "^4.0.5",
     "redux-observable": "^1.2.0",
+    "redux-thunk": "^2.3.0",
     "typescript": "^4.1.3",
-    "youtube-recommendation-scraper": "0.0.4"
+    "youtube-recommendation-scraper": "file:../../tools/smooth-youtube-modules/youtube-recommendation-scraper"
   },
   "scripts": {
     "start": "craco start",
-    "build": "craco build",
+    "build": "webpack --config webpack.config.js",
     "test": "craco test",
+    "b2": "craco build",
+    "b3": "react-scripts build",
     "eject": "craco eject",
     "build-script": "webpack --config webpack.config.js",
     "cypress:open": "cypress open",
@@ -59,10 +62,12 @@
     "@types/react-redux": "^7.1.16",
     "fs": "0.0.1-security",
     "jest-puppeteer": "^4.4.0",
+    "json-loader": "^0.5.7",
     "path": "^0.12.7",
     "redux-mock-store": "^1.5.4",
     "ts-jest": "^26.5.2",
     "ts-loader": "^8.0.17",
-    "webpack-cli": "^4.5.0"
+    "webpack-cli": "^4.5.0",
+    "webpack-node-externals": "^2.5.2"
   }
 }

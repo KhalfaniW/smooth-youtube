@@ -1,4 +1,4 @@
-import {HTMLElementReplacementPair} from "../../replace-element";
+import {HTMLElementReplacementPair} from "inject-react";
 
 export interface EffectAction {
   any;
